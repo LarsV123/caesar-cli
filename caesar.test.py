@@ -1,4 +1,5 @@
 import unittest
+from caesar import encrypt, decrypt
 
 
 class TestCaesar(unittest.TestCase):

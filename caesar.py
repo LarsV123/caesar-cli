@@ -1,3 +1,5 @@
+import click
+
 alphabet = list("abcdefghijklmnopqrstuvwxyzæøå")
 
 
@@ -59,9 +61,75 @@ def encrypt(plaintext: str, offset: int) -> str:
     return ciphertext
 
 
+@click.command()
+@click.argument(
+    "input_file",
+    type=click.File("r"),
+)
+@click.option("-t", "--target", type=str, help="The target file to write to.")
+@click.option(
+    "-e",
+    "--encrypt",
+    "action",
+    flag_value="encrypt",
+    default=True,
+    help="Encrypt the input.",
+)
+@click.option(
+    "-d", "--decrypt", "action", flag_value="decrypt", help="Decrypt the input."
+)
+@click.option(
+    "-o",
+    "--offset",
+    type=int,
+    default=1,
+    help="The offset to use for encryption/decryption.",
+)
+@click.option(
+    "--enc",
+    type=str,
+    default="utf-8",
+    help="The encoding to use for the input/output file (defaults to UTF-8).",
+)
+@click.option("-v", "--verbose", is_flag=True, help="Print arguments and results.")
+def caesar(
+    action: str,
+    offset: int,
+    input_file: click.File,
+    target: str,
+    enc: str,
+    verbose: bool,
+):
+    """
+    Encrypt or decrypt a file using a Caesar cipher.
+    If no output file is specified, the results are printed to the terminal.
+    """
+
+    if verbose:
+        print(f"{action=} | {offset=} | encoding={enc}")
+        print(f"Reading from file: {input_file.name}")
+
+    with open(input_file.name, "r", encoding=enc) as f:
+        input_text = f.read()
+
+    if action == "encrypt":
+        result = encrypt(input_text, offset)
+    elif action == "decrypt":
+        result = decrypt(input_text, offset)
+    else:
+        raise ValueError(f"Invalid action: {action}")
+
+    if verbose:
+        print(f"Output: {result}")
+
+    if target:
+        if verbose:
+            print(f"Writing to file: {target}")
+        with open(target, "w", encoding=enc) as f:
+            f.write(result)
+    else:
+        print(result)
+
+
 if __name__ == "__main__":
-    print("hei")
-    foo = "abc ABC æøå ÆØÅ 01 89"
-    print(f"foo: {foo}")
-    print(f"encrypted: {encrypt(foo, 3)}")
-    print(f"decrypted: {decrypt(encrypt(foo, 3), 3)}")
+    caesar()
