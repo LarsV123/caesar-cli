@@ -3,6 +3,38 @@ import click
 alphabet = list("abcdefghijklmnopqrstuvwxyzæøå")
 
 
+def offset_text(text: str, offset: int) -> str:
+    """Offset each character by a given offset.
+
+    Args:
+        text: The text to offset.
+        offset: The offset to use.
+
+    Returns:
+        The offset text.
+    """
+    if abs(offset) > len(alphabet):
+        raise ValueError(f"Invalid offset: {offset}")
+
+    if type(text) is not str:
+        raise ValueError("Invalid text supplied")
+
+    offset_text = ""
+    for c in text:
+        if c.isnumeric():
+            offset_text += str((int(c) + offset) % 10)
+        elif c.isalpha():
+            position = alphabet.index(c.lower())
+            new_position = (position + offset) % len(alphabet)
+            if c.isupper():
+                offset_text += alphabet[new_position].upper()
+            else:
+                offset_text += alphabet[new_position]
+        else:
+            offset_text += c
+    return offset_text
+
+
 def decrypt(ciphertext: str, offset: int) -> str:
     """Decrypts a ciphertext using a Caesar cipher.
 
@@ -13,23 +45,7 @@ def decrypt(ciphertext: str, offset: int) -> str:
     Returns:
         The decrypted ciphertext.
     """
-    if offset < 0 or offset > len(alphabet):
-        raise ValueError(f"Invalid offset: {offset}")
-
-    plaintext = ""
-    for c in ciphertext:
-        if c.isnumeric():
-            plaintext += str((int(c) - offset) % 10)
-        elif c.isalpha():
-            position = alphabet.index(c.lower())
-            new_position = (position - offset) % len(alphabet)
-            if c.isupper():
-                plaintext += alphabet[new_position].upper()
-            else:
-                plaintext += alphabet[new_position]
-        else:
-            plaintext += c
-    return plaintext
+    return offset_text(ciphertext, -offset)
 
 
 def encrypt(plaintext: str, offset: int) -> str:
@@ -42,23 +58,7 @@ def encrypt(plaintext: str, offset: int) -> str:
     Returns:
         The encrypted plaintext.
     """
-    if offset < 0 or offset > len(alphabet):
-        raise ValueError(f"Invalid offset: {offset}")
-
-    ciphertext = ""
-    for c in plaintext:
-        if c.isnumeric():
-            ciphertext += str((int(c) + offset) % 10)
-        elif c.isalpha():
-            position = alphabet.index(c.lower())
-            new_position = (position + offset) % len(alphabet)
-            if c.isupper():
-                ciphertext += alphabet[new_position].upper()
-            else:
-                ciphertext += alphabet[new_position]
-        else:
-            ciphertext += c
-    return ciphertext
+    return offset_text(plaintext, offset)
 
 
 @click.command()

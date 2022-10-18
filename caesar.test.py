@@ -18,12 +18,10 @@ class TestCaesar(unittest.TestCase):
 
     def test_encryption(self):
         for plaintext, ciphertext, offset in self.examples:
-            print(f"{plaintext} -> {ciphertext} (offset: {offset})")
             self.assertEqual(ciphertext, encrypt(plaintext, offset))
 
     def test_decryption(self):
         for plaintext, ciphertext, offset in self.examples:
-            print(f"{ciphertext} -> {plaintext} (offset: {offset})")
             self.assertEqual(plaintext, decrypt(ciphertext, offset))
 
     def test_reflexivity(self):
@@ -35,14 +33,14 @@ class TestCaesar(unittest.TestCase):
             encrypt("abc", 30)
 
         with self.assertRaises(ValueError):
-            encrypt("abc", -1)
+            encrypt("abc", -30)
 
     def test_decrypt_raises_error(self):
         with self.assertRaises(ValueError):
             decrypt("abc", 30)
 
         with self.assertRaises(ValueError):
-            decrypt("abc", -1)
+            decrypt("abc", -30)
 
 
 if __name__ == "__main__":
